@@ -59,8 +59,8 @@ class UndirectedGraph:
         """
         Checks whether two vertices are connected by an edge
         Vertices must be valid and different
-        :param vertex_1: string indicating a valid vertex
-        :param vertex_2: string indicating a different valid vertex
+        :param vertex_1: string identifying a valid vertex
+        :param vertex_2: string identifying a different valid vertex
         :return: True if the vertices are connected; False otherwise
         """
         if vertex_1 in self.adj_list[vertex_2]:  # no need to test both directions, since it's an undirected graph
@@ -88,8 +88,8 @@ class UndirectedGraph:
         Adds a new edge to the graph, connecting two vertices with the provided names
         If a vertex does not exist in the graph, it will be created, then the edge will be added
         If the edge already exists or both params refer to the same vertex, nothing happens
-        :param vertex_1: string indicating a vertex
-        :param vertex_2: string indicating a vertex to connect to vertex_1
+        :param vertex_1: string identifying a vertex
+        :param vertex_2: string identifying a vertex to connect to vertex_1
         """
         # if the vertices are the same, do nothing
         if vertex_1 == vertex_2:
@@ -113,8 +113,8 @@ class UndirectedGraph:
         """
         Removes an edge from the graph
         If a vertex name does not exist in the graph, or if there is no edge between them, nothing happens
-        :param vertex_1: string indicating a vertex
-        :param vertex_2: string indicating a vertex connected to vertex_1 whose edge will be removed
+        :param vertex_1: string identifying a vertex
+        :param vertex_2: string identifying a vertex connected to vertex_1 whose edge will be removed
         """
         # make sure the vertices are in the graph
         if not self.is_in_graph(vertex_1) or not self.is_in_graph(vertex_2):
@@ -132,7 +132,7 @@ class UndirectedGraph:
         """
         Removes a vertex and all connected edges
         If the vertex does not exist in the graph, nothing happens
-        :param vertex: string indicating a vertex
+        :param vertex: string identifying a vertex
         """
         # make sure the vertex is in the graph
         if not self.is_in_graph(vertex):
@@ -152,13 +152,14 @@ class UndirectedGraph:
 
     def get_vertices(self) -> []:
         """
-        Return list of vertices in the graph (any order)
+        Returns a list of vertices in the graph (not in any order)
         """
-       
+        return self.adj_list.keys()
 
     def get_edges(self) -> []:
         """
-        Return list of edges in the graph (any order)
+        Returns a list of edges in the graph (not in any order)
+        :return: list of edges, where an edge is a tuple of two strings identifying incident vertices
         """
         
 
@@ -216,23 +217,23 @@ if __name__ == '__main__':
     # print(g)
 
 
-    print("\nPDF - method remove_edge() / remove_vertex example 1")
-    print("----------------------------------------------------")
-    g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE'])
-    g.remove_vertex('DOES NOT EXIST')
-    g.remove_edge('A', 'B')
-    g.remove_edge('X', 'B')
-    print(g)
-    g.remove_vertex('D')
-    print(g)
+    # print("\nPDF - method remove_edge() / remove_vertex example 1")
+    # print("----------------------------------------------------")
+    # g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE'])
+    # g.remove_vertex('DOES NOT EXIST')
+    # g.remove_edge('A', 'B')
+    # g.remove_edge('X', 'B')
+    # print(g)
+    # g.remove_vertex('D')
+    # print(g)
     #
     #
-    # print("\nPDF - method get_vertices() / get_edges() example 1")
-    # print("---------------------------------------------------")
-    # g = UndirectedGraph()
-    # print(g.get_edges(), g.get_vertices(), sep='\n')
-    # g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE'])
-    # print(g.get_edges(), g.get_vertices(), sep='\n')
+    print("\nPDF - method get_vertices() / get_edges() example 1")
+    print("---------------------------------------------------")
+    g = UndirectedGraph()
+    print(g.get_edges(), g.get_vertices(), sep='\n')
+    g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE'])
+    print(g.get_edges(), g.get_vertices(), sep='\n')
     #
     #
     # print("\nPDF - method is_valid_path() example 1")
