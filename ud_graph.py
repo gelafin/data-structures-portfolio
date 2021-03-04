@@ -154,14 +154,31 @@ class UndirectedGraph:
         """
         Returns a list of vertices in the graph (not in any order)
         """
-        return self.adj_list.keys()
+        return [vertex for vertex in self.adj_list.keys()]
 
     def get_edges(self) -> []:
         """
         Returns a list of edges in the graph (not in any order)
         :return: list of edges, where an edge is a tuple of two strings identifying incident vertices
         """
-        
+        # prepare return variable
+        edges = []
+
+        # create all the edge tuple-pairs needed to describe each vertex's connections
+        for vertex in self.adj_list:
+            connections = self.adj_list[vertex]
+
+            # if this vertex has any edges, add them to the output
+            if len(connections) > 0:
+                for other_vertex in connections:
+                    edge = vertex, other_vertex
+
+                    # only add the edge if its reverse hasn't already been added
+                    reverse_edge = other_vertex, vertex
+                    if reverse_edge not in edges:
+                        edges.append(edge)
+
+        return edges
 
     def is_valid_path(self, path: []) -> bool:
         """
