@@ -40,16 +40,59 @@ class UndirectedGraph:
 
     # ------------------------------------------------------------------ #
 
-    def add_vertex(self, v: str) -> None:
+    def is_in_graph(self, vertex: str) -> bool:
         """
-        Add new vertex to the graph
+        Checks whether a vertex is in the graph
+        :param vertex: string indicating the vertex to check
+        :return: True if the vertex is in the graph; False otherwise
         """
-        
-    def add_edge(self, u: str, v: str) -> None:
+        try:
+            # test by trying to access the vertex
+            copy = self.adj_list[vertex]
+        except KeyError:
+            return False
+
+        # passed the test; it's in the graph
+        return True
+
+    def add_vertex(self, vertex: str) -> None:
         """
-        Add edge to the graph
+        Adds a new vertex to the graph
+        Duplicates are silently rejected
+        :param vertex: string to add as a new vertex. Vertex names can be any string
         """
-        
+        # silently reject duplicates
+        if self.is_in_graph(vertex):
+            return
+
+        # add the new vertex string as a key in the adj_list
+        self.adj_list[vertex] = []
+
+    def add_edge(self, vertex_1: str, vertex_2: str) -> None:
+        """
+        Adds a new edge to the graph, connecting two vertices with the provided names
+        If a vertex name does not exist in the graph, it will be created, then the edge will be added
+        If the edge already exists or both params refer to the same vertex, nothing happens
+        :param vertex_1: string indicating a vertex
+        :param vertex_2: string indicating a vertex to connect to vertex_1
+        """
+        # if the vertices are the same, do nothing
+        if vertex_1 == vertex_2:
+            return
+
+        # if a vertex is not in the graph yet, add it
+        if not self.is_in_graph(vertex_1):
+            self.add_vertex(vertex_1)
+        if not self.is_in_graph(vertex_2):
+            self.add_vertex(vertex_2)
+
+        # if the edge already exists, do nothing
+        if vertex_1 in self.adj_list[vertex_2]:  # no need to test both directions, since it's an undirected graph
+            return
+
+        # mutually connect vertices by adding them to each other's list
+        self.adj_list[vertex_1].append(vertex_2)
+        self.adj_list[vertex_2].append(vertex_1)
 
     def remove_edge(self, v: str, u: str) -> None:
         """
