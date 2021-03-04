@@ -55,11 +55,26 @@ class UndirectedGraph:
         # passed the test; it's in the graph
         return True
 
+    def are_connected(self, vertex_1: str, vertex_2: str) -> bool:
+        """
+        Checks whether two vertices are connected by an edge
+        Vertices must be valid and different
+        :param vertex_1: string indicating a valid vertex
+        :param vertex_2: string indicating a different valid vertex
+        :return: True if the vertices are connected; False otherwise
+        """
+        if vertex_1 in self.adj_list[vertex_2]:  # no need to test both directions, since it's an undirected graph
+            # passed the test; vertices are connected
+            return True
+
+        # failed the test; vertices are not connected
+        return False
+
     def add_vertex(self, vertex: str) -> None:
         """
         Adds a new vertex to the graph
         Duplicates are silently rejected
-        :param vertex: string to add as a new vertex. Vertex names can be any string
+        :param vertex: string to add as a new vertex. Vertices can be any string
         """
         # silently reject duplicates
         if self.is_in_graph(vertex):
@@ -71,7 +86,7 @@ class UndirectedGraph:
     def add_edge(self, vertex_1: str, vertex_2: str) -> None:
         """
         Adds a new edge to the graph, connecting two vertices with the provided names
-        If a vertex name does not exist in the graph, it will be created, then the edge will be added
+        If a vertex does not exist in the graph, it will be created, then the edge will be added
         If the edge already exists or both params refer to the same vertex, nothing happens
         :param vertex_1: string indicating a vertex
         :param vertex_2: string indicating a vertex to connect to vertex_1
@@ -87,24 +102,53 @@ class UndirectedGraph:
             self.add_vertex(vertex_2)
 
         # if the edge already exists, do nothing
-        if vertex_1 in self.adj_list[vertex_2]:  # no need to test both directions, since it's an undirected graph
+        if self.are_connected(vertex_1, vertex_2):
             return
 
         # mutually connect vertices by adding them to each other's list
         self.adj_list[vertex_1].append(vertex_2)
         self.adj_list[vertex_2].append(vertex_1)
 
-    def remove_edge(self, v: str, u: str) -> None:
+    def remove_edge(self, vertex_1: str, vertex_2: str) -> None:
         """
-        Remove edge from the graph
+        Removes an edge from the graph
+        If a vertex name does not exist in the graph, or if there is no edge between them, nothing happens
+        :param vertex_1: string indicating a vertex
+        :param vertex_2: string indicating a vertex connected to vertex_1 whose edge will be removed
         """
-        
+        # make sure the vertices are in the graph
+        if not self.is_in_graph(vertex_1) or not self.is_in_graph(vertex_2):
+            return
 
-    def remove_vertex(self, v: str) -> None:
+        # make sure the vertices are connected by an edge
+        if not self.are_connected(vertex_1, vertex_2):
+            return
+
+        # remove the edge by removing vertices from each other's list
+        self.adj_list[vertex_1].remove(vertex_2)
+        self.adj_list[vertex_2].remove(vertex_1)
+
+    def remove_vertex(self, vertex: str) -> None:
         """
-        Remove vertex and all connected edges
+        Removes a vertex and all connected edges
+        If the vertex does not exist in the graph, nothing happens
+        :param vertex: string indicating a vertex
         """
-        
+        # make sure the vertex is in the graph
+        if not self.is_in_graph(vertex):
+            return
+
+        # remove the vertex
+        del self.adj_list[vertex]
+
+        # remove the old vertex's edges
+        for existing_vertex in self.adj_list:
+            # note that 'try...remove()' is more efficient than 'in...remove()'
+            try:
+                self.adj_list[existing_vertex].remove(vertex)
+            except ValueError:
+                # nothing to remove
+                pass
 
     def get_vertices(self) -> []:
         """
@@ -155,32 +199,32 @@ class UndirectedGraph:
 
 if __name__ == '__main__':
 
-    print("\nPDF - method add_vertex() / add_edge example 1")
-    print("----------------------------------------------")
-    g = UndirectedGraph()
-    print(g)
-
-    for v in 'ABCDE':
-        g.add_vertex(v)
-    print(g)
-
-    g.add_vertex('A')
-    print(g)
-
-    for u, v in ['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE', ('B', 'C')]:
-        g.add_edge(u, v)
-    print(g)
-
-
-    # print("\nPDF - method remove_edge() / remove_vertex example 1")
-    # print("----------------------------------------------------")
-    # g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE'])
-    # g.remove_vertex('DOES NOT EXIST')
-    # g.remove_edge('A', 'B')
-    # g.remove_edge('X', 'B')
+    # print("\nPDF - method add_vertex() / add_edge example 1")
+    # print("----------------------------------------------")
+    # g = UndirectedGraph()
     # print(g)
-    # g.remove_vertex('D')
+    #
+    # for v in 'ABCDE':
+    #     g.add_vertex(v)
     # print(g)
+    #
+    # g.add_vertex('A')
+    # print(g)
+    #
+    # for u, v in ['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE', ('B', 'C')]:
+    #     g.add_edge(u, v)
+    # print(g)
+
+
+    print("\nPDF - method remove_edge() / remove_vertex example 1")
+    print("----------------------------------------------------")
+    g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE'])
+    g.remove_vertex('DOES NOT EXIST')
+    g.remove_edge('A', 'B')
+    g.remove_edge('X', 'B')
+    print(g)
+    g.remove_vertex('D')
+    print(g)
     #
     #
     # print("\nPDF - method get_vertices() / get_edges() example 1")
