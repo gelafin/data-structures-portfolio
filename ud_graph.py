@@ -4,8 +4,8 @@
 # Description: Implements a class for creating, manipulating, and querying an undirected graph
 
 
-import heapq
 from stack import Stack
+from collections import deque
 
 
 class UndirectedGraph:
@@ -227,10 +227,10 @@ class UndirectedGraph:
         if not self.is_in_graph(v_start):
             return []
 
-        # make a set of visited vertices
+        # make a list of visited vertices
         visited = [v_start]
 
-        # make a list of vertices to visit, used in loop
+        # make a stack of vertices to visit, used in loop
         to_visit = Stack(v_start)
 
         # visit all direct successors in order
@@ -240,9 +240,7 @@ class UndirectedGraph:
             successors_ordered = self.adj_list[vertex]
             successors_ordered.sort(reverse=True)
             has_eligible_successor = False
-            for index in range(len(successors_ordered)):
-                potential_successor = successors_ordered[index]
-
+            for potential_successor in successors_ordered:
                 if potential_successor not in visited:
                     # visit this vertex next--overwritten until it is the smallest potential successor
                     vertex = potential_successor
@@ -265,10 +263,50 @@ class UndirectedGraph:
 
     def bfs(self, v_start, v_end=None) -> []:
         """
-        Return list of vertices visited during BFS search
+        Return list of vertices visited during BFS search, in visitation order
         Vertices are picked in alphabetical order
+        If the starting vertex is not in the graph, returns an empty list
+        Based on https://www.tutorialspoint.com/data_structures_algorithms/breadth_first_traversal.htm
+        :param v_start: string identifying the starting vertex
+        :param v_end: (optional) string identifying the vertex after which to end the search early
+                      if v_end is not in the graph, the whole graph is searched
+        :return: list of strings identifying the visited vertices, or empty list if v_start isn't in the graph
         """
-        return []
+        # make sure v_start is in the graph
+        if not self.is_in_graph(v_start):
+            return []
+
+        # make a list of visited vertices
+        visited = [v_start]
+
+        # make a dequeue of vertices to visit, used in loop
+        to_visit = deque(v_start)
+
+        # visit all direct successors of each vertex in order
+        vertex = v_start
+        exit_early = False  # flag for honoring v_end
+        while len(to_visit) != 0 and vertex != v_end and exit_early is False:
+            # get the next vertex
+            vertex = to_visit.popleft()
+
+            # visit all unvisited direct successors and insert them into the queue
+            successors_ordered = self.adj_list[vertex]
+            successors_ordered.sort()
+            for successor in successors_ordered:
+                # mark this vertex as visited (if it hasn't been marked visited yet)
+                if successor not in visited:
+                    visited.append(successor)
+
+                    # terminate early if asked to by caller
+                    if successor == v_end:
+                        exit_early = True
+                        break
+
+                    # add this vertex to the itinerary for visiting later, in case it has unvisited descendants
+                    if successor not in to_visit:
+                        to_visit.append(successor)
+
+        return visited
 
     def count_connected_components(self):
         """
@@ -331,34 +369,34 @@ if __name__ == '__main__':
     #     print(list(path), g.is_valid_path(list(path)))
     #
     #
-    print("\nPDF - method dfs() and bfs() example 1")
-    print("--------------------------------------")
-    edges = ['AE', 'AC', 'BE', 'CE', 'CD', 'CB', 'BD', 'ED', 'BH', 'QG', 'FG']
-    g = UndirectedGraph(edges)
-    test_cases = 'ABCDEGH'
-    for case in test_cases:
-        print(f'{case} DFS:{g.dfs(case)} BFS:{g.bfs(case)}')
-    print('-----')
-    for i in range(1, len(test_cases)):
-        v1, v2 = test_cases[i], test_cases[-1 - i]
-        print(f'{v1}-{v2} DFS:{g.dfs(v1, v2)} BFS:{g.bfs(v1, v2)}')
-    #
-    #
-    # print("\nPDF - method count_connected_components() example 1")
-    # print("---------------------------------------------------")
+    # print("\nPDF - method dfs() and bfs() example 1")
+    # print("--------------------------------------")
     # edges = ['AE', 'AC', 'BE', 'CE', 'CD', 'CB', 'BD', 'ED', 'BH', 'QG', 'FG']
     # g = UndirectedGraph(edges)
-    # test_cases = (
-    #     'add QH', 'remove FG', 'remove GQ', 'remove HQ',
-    #     'remove AE', 'remove CA', 'remove EB', 'remove CE', 'remove DE',
-    #     'remove BC', 'add EA', 'add EF', 'add GQ', 'add AC', 'add DQ',
-    #     'add EG', 'add QH', 'remove CD', 'remove BD', 'remove QG')
+    # test_cases = 'ABCDEGH'
     # for case in test_cases:
-    #     command, edge = case.split()
-    #     u, v = edge
-    #     g.add_edge(u, v) if command == 'add' else g.remove_edge(u, v)
-    #     print(g.count_connected_components(), end=' ')
-    # print()
+    #     print(f'{case} DFS:{g.dfs(case)} BFS:{g.bfs(case)}')
+    # print('-----')
+    # for i in range(1, len(test_cases)):
+    #     v1, v2 = test_cases[i], test_cases[-1 - i]
+    #     print(f'{v1}-{v2} DFS:{g.dfs(v1, v2)} BFS:{g.bfs(v1, v2)}')
+    #
+    #
+    print("\nPDF - method count_connected_components() example 1")
+    print("---------------------------------------------------")
+    edges = ['AE', 'AC', 'BE', 'CE', 'CD', 'CB', 'BD', 'ED', 'BH', 'QG', 'FG']
+    g = UndirectedGraph(edges)
+    test_cases = (
+        'add QH', 'remove FG', 'remove GQ', 'remove HQ',
+        'remove AE', 'remove CA', 'remove EB', 'remove CE', 'remove DE',
+        'remove BC', 'add EA', 'add EF', 'add GQ', 'add AC', 'add DQ',
+        'add EG', 'add QH', 'remove CD', 'remove BD', 'remove QG')
+    for case in test_cases:
+        command, edge = case.split()
+        u, v = edge
+        g.add_edge(u, v) if command == 'add' else g.remove_edge(u, v)
+        print(g.count_connected_components(), end=' ')
+    print()
     #
     #
     # print("\nPDF - method has_cycle() example 1")
