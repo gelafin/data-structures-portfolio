@@ -308,11 +308,30 @@ class UndirectedGraph:
 
         return visited
 
-    def count_connected_components(self):
+    def count_connected_components(self) -> int:
         """
-        Return number of connected componets in the graph
+        Returns the number of connected components in the graph
+        :return: int showing the number of connected components in the graph
         """
-      
+        # declare list used in loop below
+        subgraphs = []
+
+        # check all vertices in the graph
+        for vertex in self.adj_list:
+            # if the vertex is not in any previously identified subgraph,
+            already_identified = False
+            for subgraph in subgraphs:
+                if vertex in subgraph:
+                    already_identified = True
+                    break
+
+            # get all the vertices reachable from it (including the starting vertex)
+            if not already_identified:
+                new_subgraph = self.bfs(vertex)
+                subgraphs.append(new_subgraph)
+
+        # after all vertices' subgraph paths have been traversed, return the total number of paths
+        return len(subgraphs)
 
     def has_cycle(self):
         """
