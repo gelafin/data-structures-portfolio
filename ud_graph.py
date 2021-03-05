@@ -4,6 +4,10 @@
 # Description: Implements a class for creating, manipulating, and querying an undirected graph
 
 
+import heapq
+from stack import Stack
+
+
 class UndirectedGraph:
     """
     Class to implement undirected graph
@@ -184,7 +188,7 @@ class UndirectedGraph:
         """
         Validates a given path
         An empty path is considered valid
-        :param path: list of chars identifying the vertices in the path
+        :param path: list of strings identifying the vertices in the path
         :return: True if the path is valid; False otherwise
         """
         # handle empty path
@@ -208,19 +212,63 @@ class UndirectedGraph:
         # passed above test; path is valid
         return True
 
-    def dfs(self, v_start, v_end=None) -> []:
+    def dfs(self, v_start, v_end=None):
         """
-        Return list of vertices visited during DFS search
+        Return list of vertices visited during DFS search, in visitation order
         Vertices are picked in alphabetical order
+        If the starting vertex is not in the graph, returns an empty list
+        Based on https://www.tutorialspoint.com/data_structures_algorithms/depth_first_traversal.htm
+        :param v_start: string identifying the starting vertex
+        :param v_end: (optional) string identifying the vertex after which to end the search early
+                      if v_end is not in the graph, the whole graph is searched
+        :return: list of strings identifying the visited vertices, or empty list if v_start isn't in the graph
         """
-       
+        # make sure v_start is in the graph
+        if not self.is_in_graph(v_start):
+            return []
+
+        # make a set of visited vertices
+        visited = [v_start]
+
+        # make a list of vertices to visit, used in loop
+        to_visit = Stack(v_start)
+
+        # visit all direct successors in order
+        vertex = v_start
+        while not to_visit.is_empty() and vertex != v_end:
+            # search unvisited direct successors for the next vertex
+            successors_ordered = self.adj_list[vertex]
+            successors_ordered.sort(reverse=True)
+            has_eligible_successor = False
+            for index in range(len(successors_ordered)):
+                potential_successor = successors_ordered[index]
+
+                if potential_successor not in visited:
+                    # visit this vertex next--overwritten until it is the smallest potential successor
+                    vertex = potential_successor
+
+                    # keep a trail of breadcrumbs for backtracking
+                    to_visit.push(potential_successor)
+
+                    # don't use the breadcrumbs this time
+                    has_eligible_successor = True
+
+            # if there weren't any eligible successors, backtrack
+            if not has_eligible_successor:
+                vertex = to_visit.pop()
+
+            # mark this vertex as visited (if it hasn't been counted yet)
+            if vertex not in visited:
+                visited.append(vertex)
+
+        return visited
 
     def bfs(self, v_start, v_end=None) -> []:
         """
         Return list of vertices visited during BFS search
         Vertices are picked in alphabetical order
         """
-        
+        return []
 
     def count_connected_components(self):
         """
@@ -232,9 +280,9 @@ class UndirectedGraph:
         """
         Return True if graph contains a cycle, False otherwise
         """
+        # visit each index, tracking which have already been visited
+            # if an index which has already been visited is accessible from the current index, there's a cycle
        
-
-   
 
 
 if __name__ == '__main__':
@@ -275,25 +323,25 @@ if __name__ == '__main__':
     # print(g.get_edges(), g.get_vertices(), sep='\n')
     #
     #
-    print("\nPDF - method is_valid_path() example 1")
-    print("--------------------------------------")
-    g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE'])
-    test_cases = ['ABC', 'ADE', 'ECABDCBE', 'ACDECB', '', 'D', 'Z']
-    for path in test_cases:
-        print(list(path), g.is_valid_path(list(path)))
-    #
-    #
-    # print("\nPDF - method dfs() and bfs() example 1")
+    # print("\nPDF - method is_valid_path() example 1")
     # print("--------------------------------------")
-    # edges = ['AE', 'AC', 'BE', 'CE', 'CD', 'CB', 'BD', 'ED', 'BH', 'QG', 'FG']
-    # g = UndirectedGraph(edges)
-    # test_cases = 'ABCDEGH'
-    # for case in test_cases:
-    #     print(f'{case} DFS:{g.dfs(case)} BFS:{g.bfs(case)}')
-    # print('-----')
-    # for i in range(1, len(test_cases)):
-    #     v1, v2 = test_cases[i], test_cases[-1 - i]
-    #     print(f'{v1}-{v2} DFS:{g.dfs(v1, v2)} BFS:{g.bfs(v1, v2)}')
+    # g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE'])
+    # test_cases = ['ABC', 'ADE', 'ECABDCBE', 'ACDECB', '', 'D', 'Z']
+    # for path in test_cases:
+    #     print(list(path), g.is_valid_path(list(path)))
+    #
+    #
+    print("\nPDF - method dfs() and bfs() example 1")
+    print("--------------------------------------")
+    edges = ['AE', 'AC', 'BE', 'CE', 'CD', 'CB', 'BD', 'ED', 'BH', 'QG', 'FG']
+    g = UndirectedGraph(edges)
+    test_cases = 'ABCDEGH'
+    for case in test_cases:
+        print(f'{case} DFS:{g.dfs(case)} BFS:{g.bfs(case)}')
+    print('-----')
+    for i in range(1, len(test_cases)):
+        v1, v2 = test_cases[i], test_cases[-1 - i]
+        print(f'{v1}-{v2} DFS:{g.dfs(v1, v2)} BFS:{g.bfs(v1, v2)}')
     #
     #
     # print("\nPDF - method count_connected_components() example 1")
