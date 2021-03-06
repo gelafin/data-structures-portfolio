@@ -84,6 +84,9 @@ class DirectedGraph:
             or src and dst are the same vertex,
             nothing happens
         If an edge already exists in the graph, its weight will be updated
+        :param src: int identifying the vertex to which the edge will be added
+        :param src: int identifying the vertex which will be added to src as the new edge
+        :param weight: (optional) int representing the weight of the new edge. If not provided, it is 1
         """
         # check for out-of-bounds indices
         if src >= self.v_count or dst >= self.v_count or src < 0 or dst < 0:
