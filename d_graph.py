@@ -76,6 +76,24 @@ class DirectedGraph:
 
         return self.v_count
 
+    def vertices_are_valid(self, src: int, dst: int) -> bool:
+        """
+        Validates two vertices
+        :param src: int identifying a vertex
+        :param dst: int identifying a different vertex
+        :return: True if the vertices are valid; False otherwise
+        """
+        # check for out-of-bounds indices
+        if src >= self.v_count or dst >= self.v_count or src < 0 or dst < 0:
+            return False
+
+        # check for same indices
+        if src == dst:
+            return False
+
+        # passed tests; vertices are valid
+        return True
+
     def add_edge(self, src: int, dst: int, weight=1) -> None:
         """
         Adds a new edge to the graph, connecting two vertices with provided indices
@@ -85,15 +103,10 @@ class DirectedGraph:
             nothing happens
         If an edge already exists in the graph, its weight will be updated
         :param src: int identifying the vertex to which the edge will be added
-        :param src: int identifying the vertex which will be added to src as the new edge
+        :param dst: int identifying the vertex which will be added to src as the new edge
         :param weight: (optional) int representing the weight of the new edge. If not provided, it is 1
         """
-        # check for out-of-bounds indices
-        if src >= self.v_count or dst >= self.v_count or src < 0 or dst < 0:
-            return
-
-        # check for same indices
-        if src == dst:
+        if not self.vertices_are_valid(src, dst):
             return
 
         # check for invalid weight
@@ -105,9 +118,18 @@ class DirectedGraph:
 
     def remove_edge(self, src: int, dst: int) -> None:
         """
-        TODO: Write this implementation
+        Removes an edge between two vertices with provided indices
+        If an index does not exist in the graph
+            or if there is no edge between them
+            or if src and dst are the same vertex,
+            nothing happens
+        :param src: int identifying the vertex from which the edge will be removed
+        :param dst: int identifying the vertex which will be removed from src as the edge
         """
-        pass
+        if not self.vertices_are_valid(src, dst):
+            return
+
+        self.adj_matrix[src][dst] = 0
 
     def get_vertices(self) -> []:
         """
@@ -155,19 +177,28 @@ class DirectedGraph:
 
 if __name__ == '__main__':
 
-    print("\nPDF - method add_vertex() / add_edge example 1")
-    print("----------------------------------------------")
-    g = DirectedGraph()
-    print(g)
-    for _ in range(5):
-        g.add_vertex()
-    print(g)
+    # print("\nPDF - method add_vertex() / add_edge example 1")
+    # print("----------------------------------------------")
+    # g = DirectedGraph()
+    # print(g)
+    # for _ in range(5):
+    #     g.add_vertex()
+    # print(g)
+    #
+    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
+    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
+    # for src, dst, weight in edges:
+    #     g.add_edge(src, dst, weight)
+    # print(g)
 
     edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
              (3, 1, 5), (2, 1, 23), (3, 2, 7)]
-    for src, dst, weight in edges:
-        g.add_edge(src, dst, weight)
+    g = DirectedGraph(edges)
     print(g)
+    for edge in edges:
+        src, dst, weight = edge
+        g.remove_edge(src, dst)
+        print('after removing', src, '->', dst, '\n', g)
 
 
     # print("\nPDF - method get_edges() example 1")
