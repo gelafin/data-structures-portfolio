@@ -179,6 +179,10 @@ class DirectedGraph:
             vertex = path[index]
             next_vertex = path[index + 1]
 
+            # validate vertices
+            if not self.vertices_are_valid(vertex, next_vertex):
+                return False
+
             # check to make sure these vertices are connected by an edge
             if self.adj_matrix[vertex][next_vertex] < 1:
                 return False
