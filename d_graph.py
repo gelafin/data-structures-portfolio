@@ -134,15 +134,34 @@ class DirectedGraph:
     def get_vertices(self) -> []:
         """
         Returns an unordered list of vertices in the graph
-        :return: list of vertices in the graph, unordered
+        :return: list of int vertices in the graph, unordered
         """
         return [vertex for vertex in range(len(self.adj_matrix))]
 
     def get_edges(self) -> []:
         """
-        TODO: Write this implementation
+        Returns an unordered list of edges in the graph
+        Edges are tuples with the form (source, destination, weight), where:
+            source is the source vertex
+            destination is the destination vertex
+            weight is the weight of the edge
+        :return: list of edges in the graph, as unordered tuples of ints
         """
-        pass
+        # get all of the graph's vertices
+        edges = []
+        for outer_index in range(len(self.adj_matrix)):
+            neighbor_group = self.adj_matrix[outer_index]
+
+            # get all of this source vertex's neighbors and their edge weights, adding each edge
+            for inner_index in range(len(neighbor_group)):
+                weight = self.adj_matrix[outer_index][inner_index]
+
+                # if there is a weight, there is an edge; add it to the list
+                if weight > 0:
+                    edge = (outer_index, inner_index, weight)
+                    edges.append(edge)
+
+        return edges
 
     def is_valid_path(self, path: []) -> bool:
         """
