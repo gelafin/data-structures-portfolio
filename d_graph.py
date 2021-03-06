@@ -133,9 +133,10 @@ class DirectedGraph:
 
     def get_vertices(self) -> []:
         """
-        TODO: Write this implementation
+        Returns an unordered list of vertices in the graph
+        :return: list of vertices in the graph, unordered
         """
-        pass
+        return [vertex for vertex in range(len(self.adj_matrix))]
 
     def get_edges(self) -> []:
         """
@@ -191,24 +192,31 @@ if __name__ == '__main__':
     #     g.add_edge(src, dst, weight)
     # print(g)
 
-    edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
-             (3, 1, 5), (2, 1, 23), (3, 2, 7)]
-    g = DirectedGraph(edges)
-    print(g)
-    for edge in edges:
-        src, dst, weight = edge
-        g.remove_edge(src, dst)
-        print('after removing', src, '->', dst, '\n', g)
-
-
-    # print("\nPDF - method get_edges() example 1")
-    # print("----------------------------------")
-    # g = DirectedGraph()
-    # print(g.get_edges(), g.get_vertices(), sep='\n')
     # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
     #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
     # g = DirectedGraph(edges)
-    # print(g.get_edges(), g.get_vertices(), sep='\n')
+    # print(g)
+    # for edge in edges:
+    #     src, dst, weight = edge
+    #     g.remove_edge(src, dst)
+    #     print('after removing', src, '->', dst, '\n', g)
+
+    # g = DirectedGraph()
+    # print(g)
+    # for vertex in range(10):
+    #     g.add_vertex()
+    #     print('after adding', vertex, '\n', g)
+    #     print('vertices are')
+    #     g.get_vertices()
+
+    print("\nPDF - method get_edges() example 1")
+    print("----------------------------------")
+    g = DirectedGraph()
+    print(g.get_edges(), g.get_vertices(), sep='\n')
+    edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
+             (3, 1, 5), (2, 1, 23), (3, 2, 7)]
+    g = DirectedGraph(edges)
+    print(g.get_edges(), g.get_vertices(), sep='\n')
     #
     #
     # print("\nPDF - method is_valid_path() example 1")
