@@ -57,7 +57,7 @@ class DirectedGraph:
         :return: int showing the number of vertices in the graph, including the new one
         """
         # handle adding first vertex
-        if len(self.adj_matrix) == 0:
+        if self.v_count == 0:
             self.adj_matrix.append([0])
             self.v_count += 1
             return self.v_count
@@ -78,9 +78,27 @@ class DirectedGraph:
 
     def add_edge(self, src: int, dst: int, weight=1) -> None:
         """
-        TODO: Write this implementation
+        Adds a new edge to the graph, connecting two vertices with provided indices
+        If a vertex index does not exist in the graph
+            or the weight is not a positive integer
+            or src and dst are the same vertex,
+            nothing happens
+        If an edge already exists in the graph, its weight will be updated
         """
-        pass
+        # check for out-of-bounds indices
+        if src >= self.v_count or dst >= self.v_count or src < 0 or dst < 0:
+            return
+
+        # check for same indices
+        if src == dst:
+            return
+
+        # check for invalid weight
+        if weight < 1:
+            return
+
+        # update src -> dst weight
+        self.adj_matrix[src][dst] = weight
 
     def remove_edge(self, src: int, dst: int) -> None:
         """
