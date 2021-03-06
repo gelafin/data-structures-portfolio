@@ -333,13 +333,86 @@ class UndirectedGraph:
         # after all vertices' subgraph paths have been traversed, return the total number of paths
         return len(subgraphs)
 
+    def visit(self, vertex: str, visited, to_visit):
+        """
+        Marks an index as "visited"
+        Helper for has_cycle()
+        :param vertex: string identifying the next vertex to visit
+        :param visited: list memoizing visited vertices
+        :param to_visit: Stack memoizing indices to visit later
+        :return:
+        """
+        # base case: if revisiting an index isn't fully explored yet, there's a cycle
+        if vertex in visited and to_visit.contains(vertex):
+            # there is a cycle
+            has_cycle = True
+            return
+
+        # mark this index as visited
+        visited.append(vertex)
+
+        # recursive case: search all direct descendants, and visit all which are unvisited
+        successors_ordered = self.adj_list[vertex]
+        successors_ordered.sort(reverse=True)
+        for neighbor in successors_ordered:
+            # if child.colour == white: //if the child is unexplored
+            self.visit(neighbor, visited, to_visit)
+
+        # return
+
+
     def has_cycle(self):
         """
         Return True if graph contains a cycle, False otherwise
         """
+        # handle edge cases
+        if len(self.adj_list) == 0:
+            # an empty graph is acyclic
+            return False
+        elif len(self.adj_list) == 1:
+            # a singleton graph is cyclic
+            return True
+
         # visit each index, tracking which have already been visited
-            # if an index which has already been visited is accessible from the current index, there's a cycle
-       
+        has_cycle = False
+        # v_start = self.adj_list[0]
+
+        for v_start in self.adj_list:
+            vertex = v_start  # track current vertex
+            visited = [v_start]  # track visited vertices
+            to_visit = Stack(v_start)  # track vertices to visit
+            while not to_visit.is_empty() and has_cycle is False:
+                # search unvisited direct successors for the next vertex
+                successors_ordered = self.adj_list[vertex]
+                successors_ordered.sort(reverse=True)
+                has_eligible_successor = False
+                for potential_successor in successors_ordered:
+                    # revisiting an "unfinished" index means there's a cycle
+                    # (revisiting "finished" indices is a normal part of backtracking)
+                    if potential_successor not in visited:
+                        # visit this vertex next--overwritten until it is the smallest potential successor
+                        vertex = potential_successor
+
+                        # keep a trail of breadcrumbs for backtracking
+                        to_visit.push(potential_successor)
+
+                        # don't use the breadcrumbs this time
+                        has_eligible_successor = True
+                    else:
+                        # vertex has been visited. If it's "unfinished", it's part of a cycle
+                        if to_visit.contains(potential_successor) and vertex not in self.adj_list[potential_successor]:
+                            has_cycle = True
+
+                # if there weren't any eligible successors, backtrack
+                if not has_eligible_successor:
+                    vertex = to_visit.pop()
+
+                # mark this vertex as visited (if it hasn't been counted yet)
+                if vertex not in visited:
+                    visited.append(vertex)
+
+        # test is finished; return result
+        return has_cycle
 
 
 if __name__ == '__main__':
@@ -401,35 +474,35 @@ if __name__ == '__main__':
     #     print(f'{v1}-{v2} DFS:{g.dfs(v1, v2)} BFS:{g.bfs(v1, v2)}')
     #
     #
-    print("\nPDF - method count_connected_components() example 1")
-    print("---------------------------------------------------")
-    edges = ['AE', 'AC', 'BE', 'CE', 'CD', 'CB', 'BD', 'ED', 'BH', 'QG', 'FG']
-    g = UndirectedGraph(edges)
-    test_cases = (
-        'add QH', 'remove FG', 'remove GQ', 'remove HQ',
-        'remove AE', 'remove CA', 'remove EB', 'remove CE', 'remove DE',
-        'remove BC', 'add EA', 'add EF', 'add GQ', 'add AC', 'add DQ',
-        'add EG', 'add QH', 'remove CD', 'remove BD', 'remove QG')
-    for case in test_cases:
-        command, edge = case.split()
-        u, v = edge
-        g.add_edge(u, v) if command == 'add' else g.remove_edge(u, v)
-        print(g.count_connected_components(), end=' ')
-    print()
-    #
-    #
-    # print("\nPDF - method has_cycle() example 1")
-    # print("----------------------------------")
+    # print("\nPDF - method count_connected_components() example 1")
+    # print("---------------------------------------------------")
     # edges = ['AE', 'AC', 'BE', 'CE', 'CD', 'CB', 'BD', 'ED', 'BH', 'QG', 'FG']
     # g = UndirectedGraph(edges)
     # test_cases = (
     #     'add QH', 'remove FG', 'remove GQ', 'remove HQ',
     #     'remove AE', 'remove CA', 'remove EB', 'remove CE', 'remove DE',
     #     'remove BC', 'add EA', 'add EF', 'add GQ', 'add AC', 'add DQ',
-    #     'add EG', 'add QH', 'remove CD', 'remove BD', 'remove QG',
-    #     'add FG', 'remove GE')
+    #     'add EG', 'add QH', 'remove CD', 'remove BD', 'remove QG')
     # for case in test_cases:
     #     command, edge = case.split()
     #     u, v = edge
     #     g.add_edge(u, v) if command == 'add' else g.remove_edge(u, v)
-    #     print('{:<10}'.format(case), g.has_cycle())
+    #     print(g.count_connected_components(), end=' ')
+    # print()
+    #
+    #
+    print("\nPDF - method has_cycle() example 1")
+    print("----------------------------------")
+    edges = ['AE', 'AC', 'BE', 'CE', 'CD', 'CB', 'BD', 'ED', 'BH', 'QG', 'FG']
+    g = UndirectedGraph(edges)
+    test_cases = (
+        'add QH', 'remove FG', 'remove GQ', 'remove HQ',
+        'remove AE', 'remove CA', 'remove EB', 'remove CE', 'remove DE',
+        'remove BC', 'add EA', 'add EF', 'add GQ', 'add AC', 'add DQ',
+        'add EG', 'add QH', 'remove CD', 'remove BD', 'remove QG',
+        'add FG', 'remove GE')
+    for case in test_cases:
+        command, edge = case.split()
+        u, v = edge
+        g.add_edge(u, v) if command == 'add' else g.remove_edge(u, v)
+        print('{:<10}'.format(case), g.has_cycle())

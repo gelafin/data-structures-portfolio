@@ -19,6 +19,13 @@ class Stack:
             for element in starting_list:
                 self._data.append(element)
 
+    def __repr__(self):
+        """
+        Shows the elements in the stack, bottom to top
+        :return: string showing all the stack elements, bottom to top
+        """
+        return ''.join(self._data)
+
     def push(self, value):
         """
         Pushes a value onto the stack
@@ -39,3 +46,11 @@ class Stack:
         :return: True if the stack is empty; False if not empty
         """
         return len(self._data) < 1
+
+    def contains(self, value):
+        """
+        Checks whether a value exists in the Stack
+        :param value: object to look for
+        :return: True if the value is in the Stack; False otherwise
+        """
+        return value in self._data
