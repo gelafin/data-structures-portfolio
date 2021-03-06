@@ -333,21 +333,15 @@ class UndirectedGraph:
         # after all vertices' subgraph paths have been traversed, return the total number of paths
         return len(subgraphs)
 
-    def visit(self, vertex: str, visited, to_visit):
+    def seek_cycle(self, vertex: str, previous: str, visited: list) -> bool:
         """
         Marks an index as "visited"
         Helper for has_cycle()
         :param vertex: string identifying the next vertex to visit
+        :param previous: string identifying the vertex visited in the previous visit() call
         :param visited: list memoizing visited vertices
-        :param to_visit: Stack memoizing indices to visit later
-        :return:
+        :return: True if the graph contains a cycle; False otherwise
         """
-        # base case: if revisiting an index isn't fully explored yet, there's a cycle
-        if vertex in visited and to_visit.contains(vertex):
-            # there is a cycle
-            has_cycle = True
-            return
-
         # mark this index as visited
         visited.append(vertex)
 
@@ -355,14 +349,20 @@ class UndirectedGraph:
         successors_ordered = self.adj_list[vertex]
         successors_ordered.sort(reverse=True)
         for neighbor in successors_ordered:
-            # if child.colour == white: //if the child is unexplored
-            self.visit(neighbor, visited, to_visit)
+            # base case 1: found a cycle
+            if neighbor in visited:
+                if neighbor != previous:
+                    return True
+            # recursive case: test this neighbor's neighbors
+            elif self.seek_cycle(neighbor, vertex, visited):
+                return True
 
-        # return
-
+        # base case 2: visited all vertices in this connected component
+        return False
 
     def has_cycle(self):
         """
+        Checks whether the graph contains a cycle
         Return True if graph contains a cycle, False otherwise
         """
         # handle edge cases
@@ -373,46 +373,53 @@ class UndirectedGraph:
             # a singleton graph is cyclic
             return True
 
-        # visit each index, tracking which have already been visited
-        has_cycle = False
-        # v_start = self.adj_list[0]
-
+        # search each vertex
         for v_start in self.adj_list:
-            vertex = v_start  # track current vertex
-            visited = [v_start]  # track visited vertices
-            to_visit = Stack(v_start)  # track vertices to visit
-            while not to_visit.is_empty() and has_cycle is False:
-                # search unvisited direct successors for the next vertex
-                successors_ordered = self.adj_list[vertex]
-                successors_ordered.sort(reverse=True)
-                has_eligible_successor = False
-                for potential_successor in successors_ordered:
-                    # revisiting an "unfinished" index means there's a cycle
-                    # (revisiting "finished" indices is a normal part of backtracking)
-                    if potential_successor not in visited:
-                        # visit this vertex next--overwritten until it is the smallest potential successor
-                        vertex = potential_successor
+            if self.seek_cycle(v_start, None, []):
+                return True
 
-                        # keep a trail of breadcrumbs for backtracking
-                        to_visit.push(potential_successor)
+        # passed cycle test; graph has no cycle
+        return False
 
-                        # don't use the breadcrumbs this time
-                        has_eligible_successor = True
-                    else:
-                        # vertex has been visited. If it's "unfinished", it's part of a cycle
-                        if to_visit.contains(potential_successor) and vertex not in self.adj_list[potential_successor]:
-                            has_cycle = True
-
-                # if there weren't any eligible successors, backtrack
-                if not has_eligible_successor:
-                    vertex = to_visit.pop()
-
-                # mark this vertex as visited (if it hasn't been counted yet)
-                if vertex not in visited:
-                    visited.append(vertex)
-
-        # test is finished; return result
-        return has_cycle
+        # # visit each index, tracking which have already been visited
+        # has_cycle = False
+        #
+        # for v_start in self.adj_list:
+        #     vertex = v_start  # track current vertex
+        #     visited = [v_start]  # track visited vertices
+        #     to_visit = Stack(v_start)  # track vertices to visit
+        #     while not to_visit.is_empty() and has_cycle is False:
+        #         # search unvisited direct successors for the next vertex
+        #         successors_ordered = self.adj_list[vertex]
+        #         successors_ordered.sort(reverse=True)
+        #         has_eligible_successor = False
+        #         for potential_successor in successors_ordered:
+        #             # revisiting an "unfinished" index means there's a cycle
+        #             # (revisiting "finished" indices is a normal part of backtracking)
+        #             if potential_successor not in visited:
+        #                 # visit this vertex next--overwritten until it is the smallest potential successor
+        #                 vertex = potential_successor
+        #
+        #                 # keep a trail of breadcrumbs for backtracking
+        #                 to_visit.push(potential_successor)
+        #
+        #                 # don't use the breadcrumbs this time
+        #                 has_eligible_successor = True
+        #             else:
+        #                 # vertex has been visited. If it's "unfinished", it's part of a cycle
+        #                 if to_visit.contains(potential_successor) and vertex not in self.adj_list[potential_successor]:
+        #                     has_cycle = True
+        #
+        #         # if there weren't any eligible successors, backtrack
+        #         if not has_eligible_successor:
+        #             vertex = to_visit.pop()
+        #
+        #         # mark this vertex as visited (if it hasn't been counted yet)
+        #         if vertex not in visited:
+        #             visited.append(vertex)
+        #
+        # # test is finished; return result
+        # return has_cycle
 
 
 if __name__ == '__main__':
