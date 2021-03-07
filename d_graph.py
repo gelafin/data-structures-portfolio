@@ -221,7 +221,7 @@ class DirectedGraph:
 
     def seek_cycle(self, vertex: int, exploring: set, explored: set) -> bool:
         """
-
+        Based on https://stackoverflow.com/a/31543297/14257952
         :param vertex:
         :param exploring:
         :param explored:
@@ -244,7 +244,9 @@ class DirectedGraph:
                 elif next_vertex not in explored:
                     return self.seek_cycle(next_vertex, exploring, explored)
 
-        # this vertex has been fully explored
+        # this vertex has been fully explored TODO: execution reaches here while there are still some in exploring,
+        # so the implied return happens, which returns all the way up, skipping the remaining loop iterations
+        # ...but without that return statement, the base case "True" gets discarded
         explored.add(vertex)
         exploring.remove(vertex)
         # base case 2: visited all vertices in this connected component: implied return None after all recursive calls
@@ -252,7 +254,6 @@ class DirectedGraph:
     def has_cycle(self):
         """
         TODO: Write this implementation
-        try https://www.baeldung.com/cs/detecting-cycles-in-directed-graph
         """
         # check every vertex in the graph for a cycle
         for v_start in range(len(self.adj_matrix)):
