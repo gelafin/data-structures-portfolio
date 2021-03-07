@@ -149,17 +149,34 @@ class DirectedGraph:
         """
         # get all of the graph's vertices
         edges = []
-        for outer_index in range(len(self.adj_matrix)):
-            neighbor_group = self.adj_matrix[outer_index]
-
+        for outer_vertex in range(len(self.adj_matrix)):
             # get all of this source vertex's neighbors and their edge weights, adding each edge
-            for inner_index in range(len(neighbor_group)):
-                weight = self.adj_matrix[outer_index][inner_index]
+            new_edges = self.get_direct_edges(outer_vertex)
+            edges.extend(new_edges)
 
-                # if there is a weight, there is an edge; add it to the list
-                if weight > 0:
-                    edge = (outer_index, inner_index, weight)
-                    edges.append(edge)
+        return edges
+
+    def get_direct_edges(self, vertex: int) -> list:
+        """
+        Returns an unordered list of edges connected to one vertex
+        Edges are tuples with the form (source, destination, weight), where:
+            source is the source vertex
+            destination is the destination vertex
+            weight is the weight of the edge
+        :param vertex: int
+        :return: list of edges in the graph, as unordered tuples of ints
+        """
+        edges = []
+        neighbor_group = self.adj_matrix[vertex]
+
+        # get all of this source vertex's neighbors and their edge weights, adding each edge
+        for index in range(len(neighbor_group)):
+            weight = self.adj_matrix[vertex][index]
+
+            # if there is a weight, there is an edge; add it to the list
+            if weight > 0:
+                edge = (vertex, index, weight)
+                edges.append(edge)
 
         return edges
 
@@ -201,6 +218,28 @@ class DirectedGraph:
         TODO: Write this implementation
         """
         pass
+
+    def seek_cycle(self, vertex: int, exploring: set) -> bool:
+        """
+
+        :param vertex:
+        :param exploring:
+        :return:
+        """
+        # mark this index as visited
+        exploring.add(vertex)
+
+        # recursive case: search all direct descendants, and visit all which are unvisited
+        successors = self.adj_matrix[vertex]  # get the list of edges
+        for neighbor in range(len(successors)):  # get the vertices from the list
+            pass
+            # base case 1: found a cycle
+
+            # recursive case: test this neighbor's neighbors
+
+        # base case 2: visited all vertices in this connected component
+        return False
+
 
     def has_cycle(self):
         """
@@ -249,24 +288,24 @@ if __name__ == '__main__':
     #     print('vertices are')
     #     g.get_vertices()
 
-    # print("\nPDF - method get_edges() example 1")
-    # print("----------------------------------")
-    # g = DirectedGraph()
-    # print(g.get_edges(), g.get_vertices(), sep='\n')
-    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
-    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
-    # g = DirectedGraph(edges)
-    # print(g.get_edges(), g.get_vertices(), sep='\n')
-    #
-    #
-    print("\nPDF - method is_valid_path() example 1")
-    print("--------------------------------------")
+    print("\nPDF - method get_edges() example 1")
+    print("----------------------------------")
+    g = DirectedGraph()
+    print(g.get_edges(), g.get_vertices(), sep='\n')
     edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
              (3, 1, 5), (2, 1, 23), (3, 2, 7)]
     g = DirectedGraph(edges)
-    test_cases = [[0, 1, 4, 3], [1, 3, 2, 1], [0, 4], [4, 0], [], [2]]
-    for path in test_cases:
-        print(path, g.is_valid_path(path))
+    print(g.get_edges(), g.get_vertices(), sep='\n')
+    #
+    #
+    # print("\nPDF - method is_valid_path() example 1")
+    # print("--------------------------------------")
+    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
+    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
+    # g = DirectedGraph(edges)
+    # test_cases = [[0, 1, 4, 3], [1, 3, 2, 1], [0, 4], [4, 0], [], [2]]
+    # for path in test_cases:
+    #     print(path, g.is_valid_path(path))
     #
     #
     # print("\nPDF - method dfs() and bfs() example 1")

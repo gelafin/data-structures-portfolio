@@ -347,9 +347,8 @@ class UndirectedGraph:
         visited.append(vertex)
 
         # recursive case: search all direct descendants, and visit all which are unvisited
-        successors_ordered = self.adj_list[vertex]
-        successors_ordered.sort(reverse=True)
-        for neighbor in successors_ordered:
+        successors = self.adj_list[vertex]
+        for neighbor in successors:
             # base case 1: found a cycle
             if neighbor in visited:
                 if neighbor != previous:
