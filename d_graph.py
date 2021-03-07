@@ -6,6 +6,7 @@
 
 from stack import Stack
 from collections import deque
+from heapq import *
 
 
 class DirectedGraph:
@@ -331,7 +332,7 @@ class DirectedGraph:
 
     def has_cycle(self):
         """
-        TODO: Write this implementation
+
         """
         # check every vertex in the graph for a cycle
         for v_start in range(len(self.adj_matrix)):
@@ -341,11 +342,55 @@ class DirectedGraph:
         # passed the test; graph is acyclic
         return False
 
+    def get_children(self, vertex: int) -> list:
+        """
+        Returns a vertex's children
+        :param vertex: int vertex whose children will be returned
+        :return: list of ints identifying the given vertex's child vertices
+        """
+        return [child for child in range(len(self.adj_matrix[vertex])) if self.adj_matrix[vertex][child] > 0]
+
     def dijkstra(self, src: int) -> []:
         """
-        TODO: Write this implementation
+        Computes the length of the shortest path from a given vertex to all other vertices in the graph
+        If a certain vertex is not reachable from src, its path's value is infinity
+        :param src: int identifying the source vertex from which to measure paths
+        :return: list with one value per vertex in the graph, where
+            the value at index 0 is the length of the shortest path from vertex SRC to vertex 0,
+            the value at index 1 is the length of the shortest path from vertex SRC to vertex 1, etc.
         """
-        pass
+        # track visited vertices. Vertices are stored as {vertex: min_distance_to_the_vertex}
+        visited = {}
+
+        # track vertices to be visited later
+        to_visit = [(0, src)]  # paths are stored as (min_distance_to_vertex, vertex)
+        heapify(to_visit)
+
+        while len(to_visit) > 0:
+            # get a vertex and its distance
+            distance, vertex = heappop(to_visit)
+
+            if vertex not in visited:
+                # mark this vertex as visited
+                visited[vertex] = distance
+
+                for successor in self.get_children(vertex):
+                    child_distance = self.adj_matrix[vertex][successor]
+                    total_distance = child_distance + distance  # min distance to this vertex
+                    new_entry = (total_distance, successor)
+                    heappush(to_visit, new_entry)
+
+        # fill visited dict with infinities where it's missing an entry
+        for vertex in self.get_vertices():
+            if vertex not in visited:
+                visited[vertex] = float('inf')
+
+        # convert dict to list of distances, ordering by vertex
+        list_out = []
+        for vertex in sorted(visited):
+            list_out.append(visited[vertex])
+
+        return list_out
 
 
 if __name__ == '__main__':
@@ -401,13 +446,13 @@ if __name__ == '__main__':
     #     print(path, g.is_valid_path(path))
     #
     #
-    print("\nPDF - method dfs() and bfs() example 1")
-    print("--------------------------------------")
-    edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
-             (3, 1, 5), (2, 1, 23), (3, 2, 7)]
-    g = DirectedGraph(edges)
-    for start in range(5):
-        print(f'{start} DFS:{g.dfs(start)} BFS:{g.bfs(start)}')
+    # print("\nPDF - method dfs() and bfs() example 1")
+    # print("--------------------------------------")
+    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
+    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
+    # g = DirectedGraph(edges)
+    # for start in range(5):
+    #     print(f'{start} DFS:{g.dfs(start)} BFS:{g.bfs(start)}')
     #
     #
     # print("\nPDF - method has_cycle() example 1")
@@ -428,14 +473,14 @@ if __name__ == '__main__':
     # print('\n', g)
     #
     #
-    # print("\nPDF - dijkstra() example 1")
-    # print("--------------------------")
-    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
-    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
-    # g = DirectedGraph(edges)
-    # for i in range(5):
-    #     print(f'DIJKSTRA {i} {g.dijkstra(i)}')
-    # g.remove_edge(4, 3)
-    # print('\n', g)
-    # for i in range(5):
-    #     print(f'DIJKSTRA {i} {g.dijkstra(i)}')
+    print("\nPDF - dijkstra() example 1")
+    print("--------------------------")
+    edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
+             (3, 1, 5), (2, 1, 23), (3, 2, 7)]
+    g = DirectedGraph(edges)
+    for i in range(5):
+        print(f'DIJKSTRA {i} {g.dijkstra(i)}')
+    g.remove_edge(4, 3)
+    print('\n', g)
+    for i in range(5):
+        print(f'DIJKSTRA {i} {g.dijkstra(i)}')
