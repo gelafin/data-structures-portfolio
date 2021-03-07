@@ -263,7 +263,7 @@ class UndirectedGraph:
 
     def bfs(self, v_start, v_end=None) -> []:
         """
-        Return list of vertices visited during BFS search, in visitation order
+        Returns a list of vertices visited during BFS search, in visitation order
         Vertices are picked in alphabetical order
         If the starting vertex is not in the graph, returns an empty list
         Based on https://www.tutorialspoint.com/data_structures_algorithms/breadth_first_traversal.htm

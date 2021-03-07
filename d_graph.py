@@ -5,6 +5,7 @@
 
 
 from stack import Stack
+from collections import deque
 
 
 class DirectedGraph:
@@ -256,60 +257,44 @@ class DirectedGraph:
 
         return visited
 
-    def dfs_1(self, v_start: int, v_end: int = None) -> []:
+    def bfs(self, v_start, v_end=None) -> []:
         """
-        Return list of vertices visited during DFS search, in visitation order
-        Vertices are picked in alphabetical order
+        Returns a list of vertices visited during BFS search, in visitation order
+        Vertices are picked least to greatest
         If the starting vertex is not in the graph, returns an empty list
-        Based on https://www.tutorialspoint.com/data_structures_algorithms/depth_first_traversal.htm
         :param v_start: int identifying the starting vertex
-        :param v_end: (optional) string identifying the vertex after which to end the search early
+        :param v_end: (optional) int identifying the vertex after which to end the search early
                       if v_end is not in the graph, the whole graph is searched
-        :return: list of strings identifying the visited vertices, or empty list if v_start isn't in the graph
+        :return: list of ints identifying the visited vertices, or empty list if v_start isn't in the graph
         """
         # make sure v_start is in the graph
         if not self.vertices_are_valid(v_start):
             return []
 
         # make a list of visited vertices
-        visited = [v_start]
+        visited = []
 
-        # make a stack of vertices to visit, used in loop
-        to_visit = Stack([v_start])
+        # make a dequeue of vertices to visit, used in loop
+        to_visit = deque([v_start])
 
-        # visit all direct successors in order
+        # visit all direct successors of each vertex in order
         vertex = v_start
-        while not to_visit.is_empty() and vertex != v_end:
-            # search unvisited direct successors for the next vertex
+        while len(to_visit) != 0 and vertex != v_end:
+            # get the next vertex
+            vertex = to_visit.popleft()
+
+            # mark this vertex as visited
+            visited.append(vertex)
+
+            # visit all unvisited direct successors and insert them into the queue
             successors_ordered = list(range(len(self.adj_matrix[vertex])))
-            successors_ordered.sort(reverse=True)
-            has_eligible_successor = False
-            for potential_successor in successors_ordered:
-                if potential_successor not in visited:
-                    # visit this vertex next--overwritten until it is the smallest potential successor
-                    vertex = potential_successor
-
-                    # keep a trail of breadcrumbs for backtracking
-                    to_visit.push(potential_successor)
-
-                    # don't use the breadcrumbs this time
-                    has_eligible_successor = True
-
-            # if there weren't any eligible successors, backtrack
-            if not has_eligible_successor:
-                vertex = to_visit.pop()
-
-            # mark this vertex as visited (if it hasn't been counted yet)
-            if vertex not in visited:
-                visited.append(vertex)
+            successors_ordered.sort()
+            for successor in successors_ordered:
+                # add this vertex to the itinerary for visiting later, in case it has unvisited descendants
+                if successor not in visited and successor not in to_visit and self.adj_matrix[vertex][successor] > 0:
+                    to_visit.append(successor)
 
         return visited
-
-    def bfs(self, v_start, v_end=None) -> []:
-        """
-        TODO: Write this implementation
-        """
-        return []
 
     def seek_cycle(self, vertex: int, exploring: set, explored: set) -> bool:
         """
