@@ -343,7 +343,7 @@ class DirectedGraph:
         :return: True if the graph contains a cycle; False otherwise
         """
         # check every vertex in the graph for a cycle, in case graph is not a complete graph
-        for v_start in range(len(self.adj_matrix)):
+        for v_start in self.get_vertices():
             if self.seek_cycle(v_start, set(), set()) is True:
                 return True
 
