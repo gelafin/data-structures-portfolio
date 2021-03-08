@@ -240,10 +240,11 @@ class DirectedGraph:
         if not self.vertices_are_valid(v_start):
             return []
 
-        # make a list of visited vertices
-        visited = [v_start]
+        # make a set of visited vertices
+        visited = set()
+        visited.add(v_start)
 
-        # make a stack of vertices to visit, used in loop
+        # make a stack of vertices to visit
         to_visit = Stack([v_start])
 
         # visit all direct successors in order
@@ -254,7 +255,7 @@ class DirectedGraph:
 
             # mark this vertex as visited (if it hasn't been counted yet)
             if vertex not in visited:
-                visited.append(vertex)
+                visited.add(vertex)
 
             # search unvisited direct successors for the next vertex
             successors_ordered = self.get_children(vertex)
@@ -281,7 +282,7 @@ class DirectedGraph:
             return []
 
         # make a list of visited vertices
-        visited = []
+        visited = set()
 
         # make a dequeue of vertices to visit, used in loop
         to_visit = deque([v_start])
@@ -293,7 +294,7 @@ class DirectedGraph:
             vertex = to_visit.popleft()
 
             # mark this vertex as visited
-            visited.append(vertex)
+            visited.add(vertex)
 
             # visit all unvisited direct successors and insert them into the queue
             successors_ordered = self.get_children(vertex)

@@ -154,13 +154,13 @@ class UndirectedGraph:
                 # nothing to remove
                 pass
 
-    def get_vertices(self) -> []:
+    def get_vertices(self) -> list:
         """
         Returns a list of vertices in the graph (not in any order)
         """
         return [vertex for vertex in self.adj_list.keys()]
 
-    def get_edges(self) -> []:
+    def get_edges(self) -> list:
         """
         Returns a list of edges in the graph (not in any order)
         :return: list of edges, where an edge is a tuple of two strings identifying incident vertices
@@ -184,7 +184,7 @@ class UndirectedGraph:
 
         return edges
 
-    def is_valid_path(self, path: []) -> bool:
+    def is_valid_path(self, path: list) -> bool:
         """
         Validates a given path
         An empty path is considered valid
@@ -228,7 +228,8 @@ class UndirectedGraph:
             return []
 
         # make a list of visited vertices
-        visited = [v_start]
+        visited = set()
+        visited.add(v_start)
 
         # make a stack of vertices to visit, used in loop
         to_visit = Stack(v_start)
@@ -277,7 +278,8 @@ class UndirectedGraph:
             return []
 
         # make a list of visited vertices
-        visited = [v_start]
+        visited = set()
+        visited.add(v_start)
 
         # make a dequeue of vertices to visit, used in loop
         to_visit = deque(v_start)
@@ -295,7 +297,7 @@ class UndirectedGraph:
             for successor in successors_ordered:
                 # mark this vertex as visited (if it hasn't been marked visited yet)
                 if successor not in visited:
-                    visited.append(successor)
+                    visited.add(successor)
 
                     # terminate early if asked to by caller
                     if successor == v_end:
@@ -313,10 +315,9 @@ class UndirectedGraph:
         Returns the number of connected components in the graph
         :return: int showing the number of connected components in the graph
         """
-        # declare list used in loop below
-        subgraphs = []
 
         # check all vertices in the graph
+        subgraphs = set()
         for vertex in self.adj_list:
             # if the vertex is not in any previously identified subgraph,
             already_identified = False
@@ -328,23 +329,23 @@ class UndirectedGraph:
             # get all the vertices reachable from it (including the starting vertex)
             if not already_identified:
                 new_subgraph = self.bfs(vertex)
-                subgraphs.append(new_subgraph)
+                subgraphs.add(new_subgraph)
 
         # after all vertices' subgraph paths have been traversed, return the total number of paths
         return len(subgraphs)
 
-    def seek_cycle(self, vertex: str, previous: str, visited: list) -> bool:
+    def seek_cycle(self, vertex: str, previous: str, visited: set) -> bool:
         """
         Finds a cycle in the connected component containing the given vertex, if a cycle exists
         Helper for has_cycle()
         Based on https://www.baeldung.com/cs/cycles-undirected-graph
         :param vertex: string identifying the next vertex to visit
         :param previous: string identifying the vertex visited in the previous visit() call
-        :param visited: list memoizing visited vertices
+        :param visited: set memoizing visited vertices
         :return: True if the graph contains a cycle; False otherwise
         """
         # mark this index as visited
-        visited.append(vertex)
+        visited.add(vertex)
 
         # recursive case: search all direct descendants, and visit all which are unvisited
         successors = self.adj_list[vertex]
