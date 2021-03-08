@@ -320,19 +320,20 @@ class DirectedGraph:
 
                 # recursive case: if this child vertex is not fully explored, check its children
                 elif next_vertex not in explored:
-                    return self.seek_cycle(next_vertex, exploring, explored)
+                    if self.seek_cycle(next_vertex, exploring, explored) is True:
+                        return True
 
-                else:  # TODO: never executes
-                    # this vertex is done; mark it as done and continue searching
-                    explored.add(vertex)
-                    exploring.remove(vertex)
+        # this vertex is done; mark it as done and continue searching
+        explored.add(vertex)
+        exploring.remove(vertex)
 
         # base case 2: visited all vertices in this connected component
         return False
 
     def has_cycle(self):
         """
-
+        Detects whether the graph contains a cycle
+        :return: True if the graph contains a cycle; False otherwise
         """
         # check every vertex in the graph for a cycle
         for v_start in range(len(self.adj_matrix)):
@@ -455,32 +456,32 @@ if __name__ == '__main__':
     #     print(f'{start} DFS:{g.dfs(start)} BFS:{g.bfs(start)}')
     #
     #
-    # print("\nPDF - method has_cycle() example 1")
-    # print("----------------------------------")
-    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
-    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
-    # g = DirectedGraph(edges)
-    #
-    # edges_to_remove = [(3, 1), (4, 0), (3, 2)]
-    # for src, dst in edges_to_remove:
-    #     g.remove_edge(src, dst)
-    #     print(g.get_edges(), g.has_cycle(), sep='\n')
-    #
-    # edges_to_add = [(4, 3), (2, 3), (1, 3), (4, 0)]
-    # for src, dst in edges_to_add:
-    #     g.add_edge(src, dst)
-    #     print(g.get_edges(), g.has_cycle(), sep='\n')  # TODO: returns False with 4,0
-    # print('\n', g)
-    #
-    #
-    print("\nPDF - dijkstra() example 1")
-    print("--------------------------")
+    print("\nPDF - method has_cycle() example 1")
+    print("----------------------------------")
     edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
              (3, 1, 5), (2, 1, 23), (3, 2, 7)]
     g = DirectedGraph(edges)
-    for i in range(5):
-        print(f'DIJKSTRA {i} {g.dijkstra(i)}')
-    g.remove_edge(4, 3)
+
+    edges_to_remove = [(3, 1), (4, 0), (3, 2)]
+    for src, dst in edges_to_remove:
+        g.remove_edge(src, dst)
+        print(g.get_edges(), g.has_cycle(), sep='\n')
+
+    edges_to_add = [(4, 3), (2, 3), (1, 3), (4, 0)]
+    for src, dst in edges_to_add:
+        g.add_edge(src, dst)
+        print(g.get_edges(), g.has_cycle(), sep='\n')  # TODO: returns False with 4,0
     print('\n', g)
-    for i in range(5):
-        print(f'DIJKSTRA {i} {g.dijkstra(i)}')
+    #
+    #
+    # print("\nPDF - dijkstra() example 1")
+    # print("--------------------------")
+    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
+    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
+    # g = DirectedGraph(edges)
+    # for i in range(5):
+    #     print(f'DIJKSTRA {i} {g.dijkstra(i)}')
+    # g.remove_edge(4, 3)
+    # print('\n', g)
+    # for i in range(5):
+    #     print(f'DIJKSTRA {i} {g.dijkstra(i)}')
