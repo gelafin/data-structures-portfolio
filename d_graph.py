@@ -191,6 +191,14 @@ class DirectedGraph:
 
         return edges
 
+    def get_children(self, vertex: int) -> list:
+        """
+        Returns a vertex's children
+        :param vertex: int vertex whose children will be returned
+        :return: list of ints identifying the given vertex's child vertices
+        """
+        return [child for child in range(len(self.adj_matrix[vertex])) if self.adj_matrix[vertex][child] > 0]
+
     def is_valid_path(self, path: []) -> bool:
         """
         Checks whether a given path is valid in the graph
@@ -249,7 +257,7 @@ class DirectedGraph:
                 visited.append(vertex)
 
             # search unvisited direct successors for the next vertex
-            successors_ordered = list(range(len(self.adj_matrix[vertex])))
+            successors_ordered = self.get_children(vertex)
             successors_ordered.sort(reverse=True)
             for potential_successor in successors_ordered:
                 if potential_successor not in visited and self.adj_matrix[vertex][potential_successor] > 0:
@@ -288,8 +296,7 @@ class DirectedGraph:
             visited.append(vertex)
 
             # visit all unvisited direct successors and insert them into the queue
-            successors_ordered = list(range(len(self.adj_matrix[vertex])))
-            successors_ordered.sort()
+            successors_ordered = self.get_children(vertex)
             for successor in successors_ordered:
                 # add this vertex to the itinerary for visiting later, in case it has unvisited descendants
                 if successor not in visited and successor not in to_visit and self.adj_matrix[vertex][successor] > 0:
@@ -335,21 +342,13 @@ class DirectedGraph:
         Detects whether the graph contains a cycle
         :return: True if the graph contains a cycle; False otherwise
         """
-        # check every vertex in the graph for a cycle
+        # check every vertex in the graph for a cycle, in case graph is not a complete graph
         for v_start in range(len(self.adj_matrix)):
             if self.seek_cycle(v_start, set(), set()) is True:
                 return True
 
         # passed the test; graph is acyclic
         return False
-
-    def get_children(self, vertex: int) -> list:
-        """
-        Returns a vertex's children
-        :param vertex: int vertex whose children will be returned
-        :return: list of ints identifying the given vertex's child vertices
-        """
-        return [child for child in range(len(self.adj_matrix[vertex])) if self.adj_matrix[vertex][child] > 0]
 
     def dijkstra(self, src: int) -> []:
         """
@@ -367,6 +366,7 @@ class DirectedGraph:
         to_visit = [(0, src)]  # paths are stored as (min_distance_to_vertex, vertex)
         heapify(to_visit)
 
+        # find shortest distance to each node
         while len(to_visit) > 0:
             # get a vertex and its distance
             distance, vertex = heappop(to_visit)
@@ -375,6 +375,7 @@ class DirectedGraph:
                 # mark this vertex as visited
                 visited[vertex] = distance
 
+                # calculate heights for this vertex's children and set them to be visited later, for their children
                 for successor in self.get_children(vertex):
                     child_distance = self.adj_matrix[vertex][successor]
                     total_distance = child_distance + distance  # min distance to this vertex
@@ -470,7 +471,7 @@ if __name__ == '__main__':
     edges_to_add = [(4, 3), (2, 3), (1, 3), (4, 0)]
     for src, dst in edges_to_add:
         g.add_edge(src, dst)
-        print(g.get_edges(), g.has_cycle(), sep='\n')  # TODO: returns False with 4,0
+        print(g.get_edges(), g.has_cycle(), sep='\n')
     print('\n', g)
     #
     #
